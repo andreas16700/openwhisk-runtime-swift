@@ -37,6 +37,8 @@ def sources(launcher, source_dir, main):
         with codecs.open(launcher, 'r', 'utf-8') as e:
             code = e.read()
             code += "while let inputStr: String = readLine() {\n"
+            code += "   print(\"Received: \"+inputStr)\n"
+            code += "   if inputStr == \"\"{continue}\n"
             code += "  let json = inputStr.data(using: .utf8, allowLossyConversion: true)!\n"
             code += "  let parsed = try JSONSerialization.jsonObject(with: json, options: []) as! [String: Any]\n"
             code += "  for (key, value) in parsed {\n"
@@ -44,9 +46,16 @@ def sources(launcher, source_dir, main):
             code += "      setenv(\"__OW_\\(key.uppercased())\",value as! String,1)\n"
             code += "    }\n"
             code += "  }\n"
-            code += "  let jsonData = try JSONSerialization.data(withJSONObject: parsed[\"value\"] as Any, options: [])\n"
-            code += "  _run_main(mainFunction: %s, json: jsonData)\n" % main
-            code += "} \n"
+
+            code += "   do{\n"
+            code += "let jsonData = try JSONSerialization.data(withJSONObject: parsed[\"value\"] as Any, options: [])\n"
+            code += "       await _run_main(mainFunction: %s, json: jsonData)\n" % main
+            code += "   }catch{\n"
+            code += "_whisk_print(message: \"either no input given or input given wasn't valid json!\", " \
+                    "title: \"running with no input\")\n"
+            code += "       await _run_main(mainFunction: %s, json: nil)\n" % main
+            code += "   }\n"
+            code += "}\n"
             d.write(code)
 
 def swift_build(dir, buildcmd):
