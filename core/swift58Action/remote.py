@@ -275,7 +275,7 @@ def compile_package(ssh_client, zip_path, img_tag):
 
 
 def download_action_pack_source(ssh_client, cont_name):
-    cmd = f"docker cp {cont_name}:/swiftAction/action/1/src ."
+    cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {cont_name}:/swiftAction/action/1/src ."
     exec_remote_cmd(ssh_client, cmd)
 
     scp = SCPClient(ssh_client.get_transport())
