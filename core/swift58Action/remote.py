@@ -270,7 +270,7 @@ def print_instructions(cont_id, zip_path):
 #
 def compile_package(ssh_client, zip_path, img_tag):
     name = "o.zip"
-    cmd = f"docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
+    cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
     exec_remote_cmd(ssh_client, cmd)
 
 
