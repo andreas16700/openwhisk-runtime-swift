@@ -108,7 +108,7 @@ def build_remote_img(ssh_client, tag):
         "git fetch",
         "git pull",
         f"cd {rel_path}",
-        f"docker build -t {tag} ."
+        f"export PATH=$PATH:/usr/local/bin && docker build -t {tag} ."
     ]
     ssh_cmd = " && ".join(ssh_commands)
     exec_remote_cmd(ssh_client, ssh_cmd)
