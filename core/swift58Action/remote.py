@@ -70,7 +70,7 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
     ensure_cont_not_running(ssh_client, name)
     f = "--entrypoint=\"/bin/sh\"" if set_shell else ""
 
-    cmd = f"docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
+    cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
     # Create a container from the built image, ignoring the entrypoint and keeping it running
     # create_container_cmd = f"docker create --entrypoint=\"/bin/sh\" {img_tag}"
     c = exec_remote_cmd(ssh_client, cmd)
@@ -79,7 +79,7 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
         raise Exception("Failed to create a container")
 
     # Copy the input file to the container's /swiftAction directory
-    copy_file_cmd = f"docker cp {input_file_remote_path} {name}:/swiftAction"
+    copy_file_cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {input_file_remote_path} {name}:/swiftAction"
     exec_remote_cmd(ssh_client, copy_file_cmd)
 
     # # Start the container
