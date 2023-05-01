@@ -70,7 +70,11 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
     ensure_cont_not_running(ssh_client, name)
     f = "--entrypoint=\"/bin/sh\"" if set_shell else ""
 
-    cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
+    # For running on local mac
+    # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
+
+
+    cmd = f"docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
     # Create a container from the built image, ignoring the entrypoint and keeping it running
     # create_container_cmd = f"docker create --entrypoint=\"/bin/sh\" {img_tag}"
     c = exec_remote_cmd(ssh_client, cmd)
@@ -79,7 +83,11 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
         raise Exception("Failed to create a container")
 
     # Copy the input file to the container's /swiftAction directory
-    copy_file_cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {input_file_remote_path} {name}:/swiftAction"
+
+    # For running on local mac
+    # copy_file_cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {input_file_remote_path} {name}:/swiftAction"
+
+    copy_file_cmd = f"docker cp {input_file_remote_path} {name}:/swiftAction"
     exec_remote_cmd(ssh_client, copy_file_cmd)
 
     # # Start the container
@@ -108,7 +116,9 @@ def build_remote_img(ssh_client, tag):
         "git fetch",
         "git pull",
         f"cd {rel_path}",
-        f"export PATH=$PATH:/usr/local/bin && docker build -t {tag} ."
+        # for local mac
+        # f"export PATH=$PATH:/usr/local/bin && docker build -t {tag} ."
+        f"docker build -t {tag} ."
     ]
     ssh_cmd = " && ".join(ssh_commands)
     exec_remote_cmd(ssh_client, ssh_cmd)
@@ -270,12 +280,18 @@ def print_instructions(cont_id, zip_path):
 #
 def compile_package(ssh_client, zip_path, img_tag):
     name = "o.zip"
-    cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
+    # for local mac
+    # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
+
+    cmd = f"docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
     exec_remote_cmd(ssh_client, cmd)
 
 
 def download_action_pack_source(ssh_client, cont_name):
-    cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {cont_name}:/swiftAction/action/1/src ."
+    # for local mac
+    # cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {cont_name}:/swiftAction/action/1/src ."
+
+    cmd = f"docker cp {cont_name}:/swiftAction/action/1/src ."
     exec_remote_cmd(ssh_client, cmd)
 
     scp = SCPClient(ssh_client.get_transport())
