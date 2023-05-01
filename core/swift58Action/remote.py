@@ -53,14 +53,14 @@ def get_rel_path():
 
 
 def ensure_cont_not_running(ssh_client, name):
-    check_container_cmd = f"docker ps -a --filter name=^{name}$ --format='{{{{.Names}}}}'"
+    check_container_cmd = f"sudo docker ps -a --filter name=^{name}$ --format='{{{{.Names}}}}'"
     stdin, stdout, stderr = ssh_client.exec_command(check_container_cmd)
     existing_container = stdout.read().decode('utf-8').strip()
 
     # If the container exists, remove it
     if existing_container == name:
         print(f"Removing existing container with name {name}")
-        remove_container_cmd = f"docker rm -f {name}"
+        remove_container_cmd = f"sudo docker rm -f {name}"
         exec_remote_cmd(ssh_client, remove_container_cmd)
 
 
@@ -74,7 +74,7 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
     # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
 
 
-    cmd = f"docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
+    cmd = f"sudo docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
     # Create a container from the built image, ignoring the entrypoint and keeping it running
     # create_container_cmd = f"docker create --entrypoint=\"/bin/sh\" {img_tag}"
     c = exec_remote_cmd(ssh_client, cmd)
@@ -87,7 +87,7 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
     # For running on local mac
     # copy_file_cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {input_file_remote_path} {name}:/swiftAction"
 
-    copy_file_cmd = f"docker cp {input_file_remote_path} {name}:/swiftAction"
+    copy_file_cmd = f"sudo docker cp {input_file_remote_path} {name}:/swiftAction"
     exec_remote_cmd(ssh_client, copy_file_cmd)
 
     # # Start the container
@@ -118,7 +118,7 @@ def build_remote_img(ssh_client, tag):
         f"cd {rel_path}",
         # for local mac
         # f"export PATH=$PATH:/usr/local/bin && docker build -t {tag} ."
-        f"docker build -t {tag} ."
+        f"sudo docker build -t {tag} ."
     ]
     ssh_cmd = " && ".join(ssh_commands)
     exec_remote_cmd(ssh_client, ssh_cmd)
@@ -261,7 +261,7 @@ PRIVATE_KEY = "~/.ssh/id_rsa"
 def attach_to_container(container_id):
     conn = Connection(host=HOST, user='aloizi04')
     # Start an interactive shell within the container
-    exec_command = f"docker exec -it {container_id} /bin/sh"
+    exec_command = f"sudo docker exec -it {container_id} /bin/sh"
 
     # Run the command using fabric.Connection.run, setting pty=True for an interactive session
     result = conn.run(exec_command, pty=True)
@@ -270,7 +270,7 @@ def attach_to_container(container_id):
 
 def print_instructions(cont_id, zip_path):
     zip_name = os.path.basename(zip_path)
-    run_cont_cmd = f"ssh {USER}@{HOST} && docker exec -it {cont_id} /bin/sh"
+    run_cont_cmd = f"ssh {USER}@{HOST} && sudo docker exec -it {cont_id} /bin/sh"
     print(f"Attatch to the container: \n{run_cont_cmd}")
     compile_cmd = f"/bin/proxy -compile {FUN_NAME} -debug <{zip_name} >o"
     print(f"Try compiling the action: \n {compile_cmd}")
@@ -283,7 +283,7 @@ def compile_package(ssh_client, zip_path, img_tag):
     # for local mac
     # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
 
-    cmd = f"docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
+    cmd = f"sudo docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
     exec_remote_cmd(ssh_client, cmd)
 
 
@@ -291,7 +291,7 @@ def download_action_pack_source(ssh_client, cont_name):
     # for local mac
     # cmd = f"export PATH=$PATH:/usr/local/bin && docker cp {cont_name}:/swiftAction/action/1/src ."
 
-    cmd = f"docker cp {cont_name}:/swiftAction/action/1/src ."
+    cmd = f"sudo docker cp {cont_name}:/swiftAction/action/1/src ."
     exec_remote_cmd(ssh_client, cmd)
 
     scp = SCPClient(ssh_client.get_transport())
