@@ -16,6 +16,8 @@ REPO_BRANCH = "test"
 # LOCAL_REPO_PATH =
 HOST = "clnode062.clemson.cloudlab.us"
 USER = "aloizi04"
+
+
 # HOST = "192.168.0.189"
 # USER = "andreasloizides"
 
@@ -71,10 +73,9 @@ def start_container(ssh_client, img_tag, input_file_remote_path, set_shell=False
     f = "--entrypoint=\"/bin/sh\"" if set_shell else ""
 
     # For running on local mac
-    # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
+    # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d --name {name} {f} mn2 -c \"tail -f /dev/null\""
 
-
-    cmd = f"sudo docker run -d {f} --name {name} mn2 -c \"tail -f /dev/null\""
+    cmd = f"sudo docker run -d --name {name} {f} mn2 -c \"tail -f /dev/null\""
     # Create a container from the built image, ignoring the entrypoint and keeping it running
     # create_container_cmd = f"docker create --entrypoint=\"/bin/sh\" {img_tag}"
     c = exec_remote_cmd(ssh_client, cmd)
@@ -282,9 +283,11 @@ def compile_package(ssh_client, zip_path, img_tag):
     name = "o.zip"
     # for local mac
     # cmd = f"export PATH=$PATH:/usr/local/bin && docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
-
-    cmd = f"sudo docker run -d -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
+    cont_name = "compiled"
+    cmd = f"sudo docker run --name {cont_name} -i {img_tag} -compile {FUN_NAME} -debug <{zip_path} >{name}"
     exec_remote_cmd(ssh_client, cmd)
+    return cont_name
+
 
 
 def download_action_pack_source(ssh_client, cont_name):
@@ -313,12 +316,12 @@ def main():
     remote_zip_path = upload_file(ssh_client=ssh_client, file_path=zipped, remote_dir=R_PATH)
     build_remote_img(ssh_client, tag)
 
-    container_name = start_container(ssh_client=ssh_client, img_tag=tag, input_file_remote_path=remote_zip_path)
+    container_name = start_container(ssh_client=ssh_client, img_tag=tag, input_file_remote_path=remote_zip_path, set_shell=True)
     # Attach to the running container and open a shell
     # attach_to_container(container_id)
     print_instructions(container_name, zipped)
-    compile_package(ssh_client, remote_zip_path, tag)
-    download_action_pack_source(ssh_client, container_name)
+    name = compile_package(ssh_client, remote_zip_path, tag)
+    download_action_pack_source(ssh_client, name)
     ssh_client.close()
 
 
