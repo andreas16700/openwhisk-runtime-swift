@@ -14,10 +14,10 @@ from scp import SCPClient
 REPO_URL = "https://github.com/andreas16700/openwhisk-runtime-swift"
 REPO_BRANCH = "test"
 # LOCAL_REPO_PATH =
-# HOST = "amd027.utah.cloudlab.us"
-# USER = "aloizi04"
-HOST = "192.168.0.189"
-USER = "andreasloizides"
+HOST = "clnode062.clemson.cloudlab.us"
+USER = "aloizi04"
+# HOST = "192.168.0.189"
+# USER = "andreasloizides"
 
 
 def run_cmd(cmd):
