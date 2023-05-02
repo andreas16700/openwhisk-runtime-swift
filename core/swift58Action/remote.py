@@ -14,7 +14,7 @@ from scp import SCPClient
 REPO_URL = "https://github.com/andreas16700/openwhisk-runtime-swift"
 REPO_BRANCH = "test"
 # LOCAL_REPO_PATH =
-HOST = "clnode062.clemson.cloudlab.us"
+HOST = "clnode004.clemson.cloudlab.us"
 USER = "aloizi04"
 
 

@@ -1,0 +1,50 @@
+{
+  "pins" : [
+    {
+      "identity" : "mockpowersoftclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/andreas16700/MockPowersoftClient",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e4edb6d75e8ebfe311299742d90f586d6b3e1105"
+      }
+    },
+    {
+      "identity" : "mockshopifyclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/andreas16700/MockShopifyClient",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a3e6584b0337fefb39ca64314866799b5612e25b"
+      }
+    },
+    {
+      "identity" : "powersoftkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/andreas16700/PowersoftKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a6c78c5fc27fac5748a7a3165b38f674430415f5"
+      }
+    },
+    {
+      "identity" : "shopifykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/andreas16700/ShopifyKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b9a10d3a1d1d243725ac4ae6bae9e8b8595d537a"
+      }
+    },
+    {
+      "identity" : "swiftlinuxnetworking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/andreas16700/SwiftLinuxNetworking",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f72b05d9953ab92a1d637e3b68ba1eb605c24e65"
+      }
+    }
+  ],
+  "version" : 2
+}

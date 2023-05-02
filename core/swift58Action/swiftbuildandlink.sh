@@ -16,4 +16,5 @@
 # limitations under the License.
 #
 swift package update
+echo "[Done swift package update]"
 swift build -c release
